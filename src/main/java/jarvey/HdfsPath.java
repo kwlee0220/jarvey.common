@@ -16,6 +16,7 @@ import org.apache.hadoop.fs.Path;
 
 import com.google.common.base.Objects;
 
+import utils.io.FilePath;
 import utils.stream.FStream;
 
 /**
