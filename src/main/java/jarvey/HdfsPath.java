@@ -50,15 +50,24 @@ public class HdfsPath implements FilePath, Serializable {
 	public String getPath() {
 		return m_path.toString();
 	}
+	
+	public FileSystem getFileSystem() {
+		return m_fs;
+	}
 
 	public FileStatus getFileStatus() throws IOException {
 		return m_fs.getFileStatus(m_path);
 	}
 
 	@Override
-	public String getAbsolutePath() {
+	public synchronized String getAbsolutePath() {
 		try {
-			return m_path.isAbsolute() ? m_path.toString() :getFileStatus().getPath().toString();
+			if ( !m_path.isAbsolute() || m_path.isAbsoluteAndSchemeAuthorityNull() ) {
+				FileStatus current = m_fs.getFileStatus(new Path("."));
+				m_path = new Path(current.getPath(), m_path);
+			}
+			
+			return m_path.toString();
 		}
 		catch ( IOException e ) {
 			throw new UncheckedIOException(e);
