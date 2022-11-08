@@ -15,10 +15,9 @@ import utils.stream.FStream;
  */
 public interface FilePath {
 	/**
-	 * Returns the name of the file or directory denoted by this abstract pathname.
+	 * 본 파일의 이름을 반환한다..
 	 *
-	 * @return The name of the file or directory denoted by this abstract pathname,
-	 * or the empty string if this pathname's name sequence is empty
+	 * @return 파일 이름.
 	 */
 	public String getName();
 	
@@ -113,13 +112,12 @@ public interface FilePath {
 		
 		FilePath parent = getParent();
 		if ( parent != null ) {
-			parent.delete();
+			parent.deleteIfEmptyDirectory();
 		}
-		parent.deleteIfEmptyDirectory();
 	}
 	
 	public default void deleteIfEmptyDirectory() throws IOException {
-		if ( isDirectory() && streamChildFilePaths().exists() ) {
+		if ( isDirectory() && !streamChildFilePaths().exists() ) {
 			delete();
 			
 			FilePath parent = getParent();
@@ -179,8 +177,7 @@ public interface FilePath {
 
 	public default FStream<FilePath> walkTree(boolean includeCurrent) throws IOException {
 		Function<FilePath,FStream<FilePath>> walkDown
-			= UncheckedFunction.sneakyThrow(fp ->  fp.isDirectory() ? fp.walkTree(includeCurrent)
-																	: FStream.of(fp));
+			= UncheckedFunction.sneakyThrow(fp ->  fp.isDirectory() ? fp.walkTree(true) : FStream.of(fp));
 		FStream<FilePath> descendents = streamChildFilePaths().flatMap(walkDown);
 		if ( includeCurrent ) {
 			return FStream.concat(FStream.of(this), descendents);
