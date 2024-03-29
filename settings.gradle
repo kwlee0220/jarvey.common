@@ -1,7 +1,6 @@
 rootProject.name = 'jarvey.common'
 
-ext.common_dir = '../../common'
-['utils', 'utils.geo'].each {
-	include ":$it"
-	project(":$it").projectDir = file("$common_dir/$it")
-}
+include ":utils"
+project(":utils").projectDir = file("../../common/utils")
+
+println project(":utils").projectDir
