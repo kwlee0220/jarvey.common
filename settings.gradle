@@ -1,4 +1,4 @@
 rootProject.name = 'jarvey.common'
 
-include ":utils"
-project(":utils").projectDir = file("../../common/utils")
+include ':utils'
+project(':utils').projectDir = file('../../common/utils')
